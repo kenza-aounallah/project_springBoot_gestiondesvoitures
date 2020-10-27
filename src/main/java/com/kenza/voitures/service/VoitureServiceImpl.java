@@ -3,6 +3,8 @@ package com.kenza.voitures.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.kenza.voitures.entities.Voiture;
@@ -40,6 +42,12 @@ public class VoitureServiceImpl implements VoitureService {
 	@Override
 	public List<Voiture> getAllVoitures() {
 		return voitureRepository.findAll();
+	}
+
+	@Override
+	public Page<Voiture> getAllVoituresParPage(int page, int size) {
+	
+		return voitureRepository.findAll(PageRequest.of(page, size));
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -37,21 +38,32 @@ public class VoitureController {
 	return "createVoiture";
 	}
 	@RequestMapping("/ListeVoitures")
-	public String listeVoitures(ModelMap modelMap)
+	public String listeVoitures(ModelMap modelMap,
+			@RequestParam (name="page",defaultValue = "0") int page,
+			@RequestParam (name="size", defaultValue = "4") int size)
 	{
-	List<Voiture> voit = voitureService.getAllVoitures();
-	modelMap.addAttribute("voitures", voit);
-	return "listeVoitures";
+		Page<Voiture> prods = voitureService.getAllVoituresParPage(page, size);
+		modelMap.addAttribute("voitures", prods);		
+		modelMap.addAttribute("pages", new int[prods.getTotalPages()]);	
+		modelMap.addAttribute("currentPage", page);	
+		return "listeVoitures";	
 	}
+	
 	@RequestMapping("/supprimerVoiture")
 	public String supprimerVoiture(@RequestParam("id") Long id,
-	ModelMap modelMap)
+	ModelMap modelMap,
+	@RequestParam (name="page",defaultValue = "0") int page,
+	@RequestParam (name="size", defaultValue = "2") int size
+	)
 	{
-	voitureService.deleteVoitureById(id);
-	List<Voiture> prods = voitureService.getAllVoitures();
-	modelMap.addAttribute("voitures", prods);
-	return "listeVoitures";
-	}
+		voitureService.deleteVoitureById(id);
+		Page<Voiture> prods =voitureService.getAllVoituresParPage(page, size);
+		modelMap.addAttribute("voitures", prods);
+		modelMap.addAttribute("pages", new int[prods.getTotalPages()]);
+		modelMap.addAttribute("currentPage", page);
+		modelMap.addAttribute("size", size);
+		return "listeVoitures";
+		}
 	@RequestMapping("/modifierVoiture")
 	public String editerProduit(@RequestParam("id") Long id,ModelMap modelMap)
 	{
